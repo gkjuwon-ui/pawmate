@@ -1,0 +1,144 @@
+// ============================================
+// PawMate Backend - Prisma 데이터베이스 스키마
+// prisma/schema.prisma
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  phone         String?
+  profileImage  String?
+  passwordHash  String
+  latitude      Float?
+  longitude     Float?
+  neighborhood  String?
+  rating        Float     @default(5.0)
+  totalWalks    Int       @default(0)
+  isOnline      Boolean   @default(false)
+  lastActiveAt  DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  pets              Pet[]
+  walkPreferences   WalkPreference?
+  sentRequests      WalkMatch[]     @relation("requester")
+  receivedRequests  WalkMatch[]     @relation("target")
+  sentMessages      ChatMessage[]
+  reviews           WalkReview[]
+
+  @@index([latitude, longitude])
+  @@index([neighborhood])
+}
+
+model Pet {
+  id          String   @id @default(cuid())
+  name        String
+  breed       String
+  species     String   @default("dog")
+  age         Int
+  weight      Float
+  size        String   // small, medium, large
+  temperament String   // calm, energetic, shy, friendly
+  photo       String?
+  vaccinated  Boolean  @default(false)
+  neutered    Boolean  @default(false)
+  description String?
+  ownerId     String
+  createdAt   DateTime @default(now())
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@index([size])
+  @@index([species])
+}
+
+model WalkPreference {
+  id               String   @id @default(cuid())
+  preferredTime    String   @default("morning")
+  preferredDuration Int     @default(30)
+  maxDistance       Float    @default(2.0)
+  petSizePrefs     String[] @default(["small", "medium", "large"])
+  userId           String   @unique
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WalkMatch {
+  id            String   @id @default(cuid())
+  requesterId   String
+  targetId      String
+  status        String   @default("pending")
+  meetingLat    Float?
+  meetingLng    Float?
+  meetingAddress String?
+  scheduledAt   DateTime
+  duration      Int      @default(30)
+  message       String?
+  completedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  requester  User          @relation("requester", fields: [requesterId], references: [id])
+  target     User          @relation("target", fields: [targetId], references: [id])
+  messages   ChatMessage[]
+  reviews    WalkReview[]
+  route      WalkRoute?
+
+  @@index([requesterId])
+  @@index([targetId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  matchId   String
+  senderId  String
+  content   String
+  type      String   @default("text")
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  match  WalkMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  sender User      @relation(fields: [senderId], references: [id])
+
+  @@index([matchId])
+  @@index([senderId])
+}
+
+model WalkReview {
+  id        String   @id @default(cuid())
+  matchId   String
+  reviewerId String
+  rating    Int
+  review    String?
+  createdAt DateTime @default(now())
+
+  match    WalkMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  reviewer User      @relation(fields: [reviewerId], references: [id])
+
+  @@unique([matchId, reviewerId])
+}
+
+model WalkRoute {
+  id               String   @id @default(cuid())
+  matchId          String   @unique
+  name             String
+  distance         Float
+  estimatedDuration Int
+  waypoints        Json
+  createdAt        DateTime @default(now())
+
+  match WalkMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+}
