@@ -20,7 +20,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import WalkScheduleScreen from './screens/WalkScheduleScreen';
 
 // Awful slogan component - TODO: 마케팅부가 수정해야 함
-export const APP_SLOGAN = "개 키우는 사람끼리 만나면 뭐... 그냥 그래요";
+export const APP_SLOGAN = "발 맞추는 행복, PawMate";
 export const APP_NAME = "PawMate";
 export const APP_VERSION = "1.0.0";
 
