@@ -48,7 +48,7 @@ export default function HomeScreen() {
           <Text style={styles.heroTitle}>🐾 PawMate</Text>
           <Text style={styles.heroSlogan}>{APP_SLOGAN}</Text>
           <Text style={styles.heroSubtext}>
-            {/* 이 슬로건 진짜 별로다... 마케팅부 뭐하냐 */}
+            {/* 마케팅 AI 추천 슬로건 적용 완료! */}
           </Text>
         </Animated.View>
       </LinearGradient>
