@@ -1,7 +1,7 @@
 {
   "name": "pawmate",
   "version": "1.0.0",
-  "description": "반려인 동네 산책 매칭 앱 - 개 키우는 사람끼리 만나면 뭐... 그냥 그래요",
+  "description": "반려인 동네 산책 매칭 앱 - 발 맞추는 행복, PawMate",
   "private": true,
   "scripts": {
     "start": "expo start",
